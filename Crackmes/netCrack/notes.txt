@@ -1,0 +1,24 @@
+﻿[Analysis Log]
+Target: Crackme 693017b5 (NetCrack)
+Goal: Bypass network-based password validation.
+
+1. Static Analysis (Ghidra):
+   - Identified the 'checkResponse' function.
+   - Located the hardcoded password string: "Platon".
+   - Observed an 'LEA' instruction calculating an offset based on input length.
+   - Hypothesis: The check compares the *last 6 bytes* of the input buffer.
+
+2. Dynamic Analysis (ltrace):
+   - Ran 'ltrace ./netCrack' to intercept library calls.
+   - Observed 'connect()' attempting to reach 127.0.0.1 on TCP Port 3125.
+   - This confirmed the binary acts as a client, requiring a listener to receive the password.
+
+3. The "Newline" Trap:
+   - Initial attempts sending "Platon" via Netcat failed.
+   - Debugging revealed that standard input sends a newline character ('\n' / 0x0A), making the payload 7 bytes long ("Platon\n").
+   - The offset logic (Length - 6) caused a mismatch due to this extra byte.
+
+4. Solution:
+   - Required a payload of exactly 6 bytes (or a padded payload ending in the 6-byte password).
+   - Used 'echo -n' to suppress the newline.
+   - Set up a Netcat listener on port 3125 to feed the payload immediately upon connection.
