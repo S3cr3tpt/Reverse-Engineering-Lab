@@ -1,0 +1,24 @@
+# Analysis: ToasterBirb Flags (Crackme)
+Target: flags (ELF 64-bit)
+Type: Bitwise Logic Check
+
+## 1. Reverse Engineering
+- The binary reads input and enters a `do-while` loop.
+- Counter starts at 5 and decrements to 0.
+- Check: `bVar4 & (Input_Byte << Counter)`
+- Target Mask: `0x40` (Binary 0100 0000)
+
+## 2. The Constraint
+The loop fails if the bitwise AND operation returns 0.
+We need to provide bytes that, when left-shifted by the counter value, align with the 0x40 bit.
+
+Calculations:
+- Counter 5: x << 5 = 64  -> x = 2  (0x02)
+- Counter 4: x << 4 = 64  -> x = 4  (0x04)
+- Counter 3: x << 3 = 64  -> x = 8  (0x08)
+- Counter 2: x << 2 = 64  -> x = 16 (0x10)
+- Counter 1: x << 1 = 64  -> x = 32 (0x20)
+
+## 3. Exploit Strategy
+Instead of sending a static string, I wrote a Python script to generate valid bytes dynamically. 
+The script ensures the required bit is set (OR operation) while randomizing the others to prove the "don't care" bits do not affect the validity.
