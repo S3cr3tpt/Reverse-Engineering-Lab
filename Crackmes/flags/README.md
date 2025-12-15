@@ -18,16 +18,36 @@ mask = 0x40; // Binary: 0100 0000
 loop (counter = 5 down to 1):
     if ( (input_byte << counter) & mask == 0 ) 
         return FAIL;
-```c
+```
 
-The Math: To pass the check, the result of the shift operation must have the 7th bit set (matching 0x40).
+**The Math:**
+To pass the check, the result of the shift operation must have the 7th bit set (matching `0x40`).
 
-Byte 1 (Shift 5): Needs bit 1 set -> 0x02 (Binary ...00010)
+  * **Byte 1 (Shift 5):** Needs bit 1 set -\> `0x02` (Binary `...00010`)
+  * **Byte 2 (Shift 4):** Needs bit 2 set -\> `0x04` (Binary `...00100`)
+  * **Byte 3 (Shift 3):** Needs bit 3 set -\> `0x08` (Binary `...01000`)
+  * **Byte 4 (Shift 2):** Needs bit 4 set -\> `0x10` (Binary `...10000`)
+  * **Byte 5 (Shift 1):** Needs bit 5 set -\> `0x20` (Binary `...00000`)
 
-Byte 2 (Shift 4): Needs bit 2 set -> 0x04 (Binary ...00100)
+## 3\. Solution
 
-Byte 3 (Shift 3): Needs bit 3 set -> 0x08 (Binary ...01000)
+I wrote a **Polymorphic Keygen** (`keygen.py`) using `pwntools`.
 
-Byte 4 (Shift 2): Needs bit 4 set -> 0x10 (Binary ...10000)
+  * It calculates the mandatory bit for each position.
+  * It fills the rest of the byte with random noise (polymorphism).
+  * This proves that many different keys can unlock the binary, not just one.
 
-Byte 5 (Shift 1): Needs bit 5 set -> 0x20 (Binary ...00000)
+## 4\. Usage
+
+**Install Dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Run the Solver:**
+
+```bash
+python3 keygen.py
+```
+
