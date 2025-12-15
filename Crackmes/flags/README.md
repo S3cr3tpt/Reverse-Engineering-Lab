@@ -48,6 +48,6 @@ pip install -r requirements.txt
 **Run the Solver:**
 
 ```bash
-python3 keygen.py
+python3 solver.py
 ```
 
